@@ -79,7 +79,14 @@ public class FeastMenuManager {
             }
         }
     }
-    
+    /***
+     * Trả về null nếu chuỗi trống
+     * tách chuỗi text thành 1 mảng để xử lí
+     * Kiểm tra nếu số lượng thành phần không phải là 4
+     * Loại bỏ khoảng trắng dư thừa của từng phần tử
+     * kiểm ra ingredients rồi thay thế các dấu# thành xuống hàng
+     * trả về một MENU được khởi tạo từ các thành phần trên
+     */
     private FeastMenu dataToObject(String text) {
         if (text == null || text.trim().isEmpty()) {
             return null; // Trả về null nếu chuỗi trống
@@ -110,7 +117,7 @@ public class FeastMenuManager {
         }
     }
         
-    //TÌM KIẾM MENU BẰNG CODE 
+    //TÌM KIẾM MENU BẰNG CODE menu
     public FeastMenu searchMenuByCode(String menuCode) {
         for (FeastMenu i : menuList) {
             if (i.getCodeMenu().toLowerCase().equalsIgnoreCase(menuCode.toLowerCase())) {

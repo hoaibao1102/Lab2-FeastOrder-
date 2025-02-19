@@ -35,7 +35,7 @@ public class Customer implements Serializable{
     }
 
     public void setCode(String code) {
-        this.code = code;
+        this.code = code.toUpperCase();
     }
 
     public String getName() {
@@ -65,7 +65,7 @@ public class Customer implements Serializable{
     @Override
     public String toString() {
         return String.format("|%-12s|%-20s|%-12s|%-21s  |",
-                this.code, this.name, this.phone, this.email);
+                this.code.toUpperCase(), this.name, this.phone, this.email);
     }
     
 }

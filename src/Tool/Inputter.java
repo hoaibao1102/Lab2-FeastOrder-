@@ -46,12 +46,17 @@ public class Inputter {
         return num;
     }
 
-    public String inputAndLoot(String mess, String pattern) {
+    public String inputAndLoop(String mess, String pattern) {
         String result = "";
         boolean more = true;
         do {
             result = getString(mess);
+            //nếu mẫu kiểm tra là Date valid thì dùng futurDate
+            if(pattern.equals(Acceptable.DATE_VALID)){
+                more = !Acceptable.isFutureDate(result, pattern);
+            }else
             more = !Acceptable.isValid(result, pattern);
+            
             if (more) {
                 System.out.println("Date is invalid!. Re-Enter.....");
             }
@@ -63,13 +68,13 @@ public class Inputter {
         Customer x = new Customer();
         // khi không update(false) mới đi vào lệnh if dưới đây
         if(!isUpdate){
-            x.setCode(inputAndLoot("Customer Code: ", Acceptable.CUSTOMER_ID_VALID));
+            x.setCode(inputAndLoop("Customer Code (C, G, K followed by 4 digits): ", Acceptable.CUSTOMER_ID_VALID));
         }
         //Cho nhập thông tin khách hàng
         
-        x.setName(inputAndLoot("Customer Name: ", Acceptable.NAME_VALID));
-        x.setPhone(inputAndLoot("Phone[10 digits]: ", Acceptable.PHONE_VALID));
-        x.setEmail(inputAndLoot("Email: ", Acceptable.EMAIL_VALID));
+        x.setName(inputAndLoop("Customer Name: ", Acceptable.NAME_VALID));
+        x.setPhone(inputAndLoop("Phone[10 digits]: ", Acceptable.PHONE_VALID));
+        x.setEmail(inputAndLoop("Email: ", Acceptable.EMAIL_VALID));
         
         return x;       
     }
@@ -77,11 +82,11 @@ public class Inputter {
     public OrderFeast inputOrderFeast(boolean isUpdate){
         OrderFeast x  = new OrderFeast();
         if(!isUpdate){
-             x.setCustomeCode(inputAndLoot("Enter customer code: ", Acceptable.CUSTOMER_ID_VALID));
+             x.setCustomeCode(inputAndLoop("Enter customer code (C, G, K followed by 4 digits): ", Acceptable.CUSTOMER_ID_VALID));
         }
-        x.setMenuCode(inputAndLoot("Enter SetMenu code: ", Acceptable.MENU_ID_VALID));
-        x.setNumTable(inputAndLoot("Enter number of tables: ", Acceptable.INTEGER_VALID));
-        x.setEventDate(inputAndLoot("Enter event date (dd/MM/yyyy): ",Acceptable.DATE_VALID));
+        x.setMenuCode(inputAndLoop("Enter SetMenu code(PW00 + 1 digit ):  ", Acceptable.MENU_ID_VALID));
+        x.setNumTable(inputAndLoop("Enter number of tables: ", Acceptable.INTEGER_VALID));
+        x.setEventDate(inputAndLoop("Enter event date (dd/MM/yyyy): ",Acceptable.DATE_VALID));
         
         return x;
     }

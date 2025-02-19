@@ -51,7 +51,7 @@ public class Customers extends ArrayList<Customer>{
         if (!checkExist(x)) {
             this.add(x);
             save = false;
-            System.out.println("Please save to file");
+            saveToFile();
         }
         else System.out.println("The customer already exists in the Register List");
         System.out.println();
@@ -87,9 +87,11 @@ public class Customers extends ArrayList<Customer>{
     }
     
     /**
-     * tìm kiếm khách hàng bằng tên
+     * tại sẵn 1 list mới để chưa danh sách kiếm được
+     * tìm kiếm khách hàng bằng tên 
      * nếu tồn tại thêm vào danh sách vừa tạo 
      * sau đó trình chiếu danh sách khách hàng có cùng tên tìm kiếm
+     * CHÚ Ý : nên dùng hàm contains khi tìm kiếm
      */
     public void searchByName(String name) {
         List<Customer> matchingName = new ArrayList<>();
@@ -104,8 +106,9 @@ public class Customers extends ArrayList<Customer>{
             System.out.println(HEADER_TABLE);
             for (Customer customer : matchingName) {
                 System.out.println(customer);
+                System.out.print(FOOTER_TABLE);
             }
-            System.out.println(FOOTER_TABLE);
+            
         }
     }
     
@@ -164,7 +167,6 @@ public class Customers extends ArrayList<Customer>{
             }
             oos.close();
             this.save = true;
-            System.out.println("Registration data has been successfully saved to `customer.dat`");
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Customers.class.getName()).log(Level.SEVERE, null, ex);
@@ -185,7 +187,7 @@ public class Customers extends ArrayList<Customer>{
     // tìm kiếm khách hàng bằng code
     public Customer searchByCode(String Code) {
         for (Customer i : this) {
-            if (i.getCode().toLowerCase().equalsIgnoreCase(Code.toLowerCase())) {
+            if (i.getCode().toLowerCase().trim().equalsIgnoreCase(Code.toLowerCase().trim())) {
                 return i;
             }
         }

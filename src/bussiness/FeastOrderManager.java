@@ -21,6 +21,8 @@ import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,23 +56,24 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
         this.menuList = new FeastMenuManager();
         menuList.readMenuFromFile();
         readOrderFromFile();
-
-        
     }
 
  
     
     /***
-     * ktra khách hàng đã tồn tại trong list hay chưa
+     * trước khi kiểm tra tt thì cho đọc lại file customer 1 lần
+     * sau đó ktra khách hàng đã tồn tại trong list hay chưa
      * kiểm tra menu id có tồn tại hay không nếu tồn tại lấy ra giá tiền của mã menu đó
-     * kiểm tra số lượng bàn có hợp lí chưa
+     * kiểm tra số lượng bàn,ngay thang có hợp lí chưa
      * ----
-     * sau đó kiểm tra đơn hàng đã tồn tại hay chưa nếu rồi thì tbao còn chưa thì tạo mã đơn hàng
+     * sau đó kiểm tra đơn hàng đã tồn tại hay chưa nếu rồi thì tbao còn chưa thì tạo MA DON HANG
      * tính tổng cost 
      * => tạo ra một orderFeast rồi đưa nó vào list Order FEAST ĐỂ CÓ THỂ LƯU LẠI
+     * HIEENR THI THONG TIN
      */
     public void placeOrder(OrderFeast Order){
-        //kiểm tra xem khách hàng đã tồn tại trong list chưa
+      //kiểm tra xem khách hàng đã tồn tại trong list chưa
+        customerList.readFromFile();
         String customerCode = Order.getCustomeCode();
         Customer newCustomer = customerList.searchByCode(customerCode);
         if (newCustomer == null) {
@@ -87,24 +90,29 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
             System.out.println("SetMenu code not found....");
             return;
         }
-        
         // lấy ra giá tiền của mỗi codeMenu
         double price = newM.getPrice();
         
-        //kiểm tra số lượng bàn khách hàng đặt có thõa mãn hay chưa
+        // lấy ra số lượng bàn
         String numTableStr = Order.getNumTable();
         int numTable2 = Integer.parseInt(numTableStr);
-        if(numTable2 <= 0){
-            System.out.println("Invalid number of tables...");
-            return;
-        }
-        
+
         String eventDateStr = Order.getEventDate();
-        eventDateStr.trim();
-        Date eventDate = parseDate(eventDateStr);
+//        eventDateStr.trim();
+//        LocalDate eventDate = null;
+//        try {
+//            eventDate = LocalDate.parse(eventDateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+//            if (eventDate.isBefore(LocalDate.now().plusDays(1))) {
+//                System.out.println("Ngày tiệc phải là ngày trong tương lai.");
+//                return;
+//            }        
+//        } catch (DateTimeParseException e) {
+//            System.out.println("Định dạng ngày không hợp lệ.");
+//        }
+
         
         //kiểm tra có bị trùng lặp đơn hàng không
-        if(isDupliOrder(customerCode,menuCode,eventDate)){
+        if(isDupliOrder(customerCode,menuCode,eventDateStr)){
             System.out.println("Duplicate data!");
             return;
         }
@@ -121,6 +129,7 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
 
         // Hiển thị thông tin đơn hàng đã đặt thành công
         displayOrderInfo(newOrder, newM,newCustomer);
+       
     }
     
     //hàm ép kiểu về ngày
@@ -133,9 +142,10 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
            return null;
         }
     }
+ 
 
     // kiểm tra đơn hàng có bị trùng lặp hay không
-    private boolean isDupliOrder(String customerCode, String menuCode, Date date) {
+    private boolean isDupliOrder(String customerCode, String menuCode, String date) {
         for (OrderFeast i : this) {
             if(i.getCustomeCode().toLowerCase().equalsIgnoreCase(customerCode.toLowerCase())
                && i.getMenuCode().toLowerCase().equalsIgnoreCase(menuCode.toLowerCase())
@@ -230,8 +240,7 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
             }
             oos.close();
             this.save = true;
-            System.out.println("Registration data has been successfully saved to `feast_order_service.dat`");
-
+            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FeastOrderManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -274,7 +283,11 @@ public class FeastOrderManager extends ArrayList<OrderFeast>{
     }
     
     /***
-     * tìm kiếm thông tin 
+     * tìm kiếm thông tin của đơn hàng mới có tồn tại hay chưa bằng cách search ID
+     * nếu có thì ta cập nhật menu code mới 
+     * tìm menu đó trong menulist để lấy ra thông tin (giá, tên)
+     * set lại các giá trị mới cho đơn hàng
+     * như(giá,code khách hàng, số lượng bàn, total code, ngày tổ chức(ngày mới phải trễ hơn ngày cũ))
      * 
      */
     public void updateInfoOrder(OrderFeast newOrder) {

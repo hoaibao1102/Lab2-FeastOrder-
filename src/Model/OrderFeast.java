@@ -100,8 +100,8 @@ public class OrderFeast implements Serializable {
         return String.format("|%-6s | %-10s | %-11s | %-8s | %-5s | %-7s|  %-11s   |",
            getOrderCode(),
            getEventDate(),
-           getCustomeCode(),
-           getMenuCode(),
+           getCustomeCode().toUpperCase(),
+           getMenuCode().toUpperCase(),
            df.format(getPrice())  ,
            getNumTable(),
            df.format(getTotalCost()));
